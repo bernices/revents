@@ -9,25 +9,25 @@ import { signInUser } from './authActions';
 import { closeModal } from '../../app/common/modals/modelReducer';
 export default function LoginForm(){
     const dispatch = useDispatch();
-    return(
+    return (
         <ModalWrapper size='mini' header='Sign in to Re-vents'>
             <Formik
-                initialValues={{email:'', password:''}}
+                initialValues={{email: '', password: ''}}
                 validationSchema={Yup.object({
-                    email:Yup.string().required().email(),
-                    password:Yup.string().required()
+                    email: Yup.string().required().email(),
+                    password: Yup.string().required()
                 })}
-                onSubmit={(values,{setSubmitting})=>{
+                onSubmit={(values, {setSubmitting}) => {
                     dispatch(signInUser(values));
                     setSubmitting(false);
                     dispatch(closeModal());
                 }}
             >
-                {({ isSubmitting, dirty, isValid }) => (
+                {({isSubmitting, isValid, dirty}) => (
                     <Form className='ui form'>
-                        <MyTextInput name='email' placeholder='Email address'/>
-                        <MyTextInput name='password' placeholder='Password' type='password'/>
-                        <Button
+                        <MyTextInput name='email' placeholder='Email Address' />
+                        <MyTextInput name='password' placeholder='Password' type='password' />
+                        <Button 
                             loading={isSubmitting}
                             disabled={!isValid || !dirty || isSubmitting}
                             type='submit'
@@ -39,8 +39,6 @@ export default function LoginForm(){
                     </Form>
                 )}
             </Formik>
-
         </ModalWrapper>
     )
-
 }

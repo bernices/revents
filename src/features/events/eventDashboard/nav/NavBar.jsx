@@ -22,8 +22,8 @@ export default function NavBar(){
                     <Button  positive inverted content='Create Event'/>
                 </Menu.Item> }
                 <Menu.Item position='right'>
-                {authenticated?<SignedInMenu />:
-                <SignedOutMenu />}
+                {authenticated?(<SignedInMenu />):
+                (<SignedOutMenu />)}
                 </Menu.Item>
             </Container>
 

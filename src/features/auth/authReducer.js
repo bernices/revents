@@ -17,14 +17,14 @@ export default function authReducer(state=initialState,{type,payload}){
                 currentUser:{
                     email:payload.email,
                     photoURL:'/assets/user.png',
-                }
-            }
+                },
+            };
         case SIGN_OUT_USER:
             return{
                 ...state,
                 authenticated:false,
                 currentUser:null,
-            }
+            };
         default:
             return state;
 
