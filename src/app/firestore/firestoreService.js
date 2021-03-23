@@ -1,4 +1,5 @@
 import cuid from 'cuid';
+import { toast } from 'react-toastify';
 import firebase from '../config/firebase';
 
 const db = firebase.firestore();
@@ -57,4 +58,32 @@ export function cancelEventToggle(event){
         isCancelled: !event.isCancelled
     });
 
+}
+
+export function setUserProfileData(user){
+    return db.collection('users').doc(user.uid).set({
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL || null,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    })
+}
+
+export async function socialLogin(selectedProvider){
+    let provider;
+    if(selectedProvider === 'facebook'){
+        provider = new firebase.auth.FacebookAuthProvider();
+    }
+    if(selectedProvider ==='google'){
+        provider = new firebase.auth.GoogleAuthProvider();
+    }
+    try{
+        const result = await firebase.auth().signInWithPopup(provider);
+        console.log(result);
+        if(result.additionalUserInfo.isNewUser){
+            await setUserProfileData(result.user);
+        }
+    }catch(error){
+        toast.error(error.message);
+    }
 }

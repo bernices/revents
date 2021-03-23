@@ -11,6 +11,7 @@ export default function SignedOutMenu({setAuthenticated}) {
         <Button onClick={() => dispatch(openModal({modalType:'LoginForm'}))} 
          basic inverted content="Login" />
         <Button
+          onClick={() => dispatch(openModal({modalType:'RegisterForm'}))} 
           inverted
           basic
           content="Register"
