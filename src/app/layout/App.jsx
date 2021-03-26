@@ -9,6 +9,7 @@ import EventDetailedPage from '../../features/events/eventDashboard/eventDetaile
 import EventForm from '../../features/events/eventDashboard/eventForm/EventForm';
 import NavBar from '../../features/events/eventDashboard/nav/NavBar';
 import HomePage from '../../features/home/HomePage';
+import ProfilePage from '../../features/profiles/profilePage/ProfilePage';
 import Sandbox from '../../features/sandbox/Sandbox';
 import ErrorComponent from '../common/errors/ErrorComponent';
 import ModalManager from '../common/modals/ModalManager';
@@ -34,6 +35,7 @@ function App() {
             <Route exact path='/events/:id' component={EventDetailedPage}/>
             <Route exact path={['/createEvent','/manage/:id']}  key={key} component={EventForm}/>
             <Route path='/account' component={AccountPage}/>
+            <Route path='/profile/:id' component={ProfilePage}/>
             <Route path='/error' component={ErrorComponent}/>
             </Container>
           </>

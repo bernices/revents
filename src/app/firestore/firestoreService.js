@@ -1,89 +1,107 @@
-import cuid from 'cuid';
-import { toast } from 'react-toastify';
-import firebase from '../config/firebase';
+import cuid from "cuid";
+import { toast } from "react-toastify";
+import firebase from "../config/firebase";
 
 const db = firebase.firestore();
 
-export function dataFromSnapshot(snapshot){
-    if(!snapshot.exists) return undefined;
-    const data = snapshot.data();
+export function dataFromSnapshot(snapshot) {
+  if (!snapshot.exists) return undefined;
+  const data = snapshot.data();
 
-    for (const prop in data){
-        if(data.hasOwnProperty(prop)){
-            if(data[prop] instanceof firebase.firestore.Timestamp){
-                data[prop] = data[prop].toDate();
-            }
-        }
+  for (const prop in data) {
+    if (data.hasOwnProperty(prop)) {
+      if (data[prop] instanceof firebase.firestore.Timestamp) {
+        data[prop] = data[prop].toDate();
+      }
     }
+  }
 
-    return {
-        ...data,
-        id: snapshot.id,
-
-    }
-
+  return {
+    ...data,
+    id: snapshot.id,
+  };
 }
 
-export function listenTogetEventsFromFirestore(){
-    return db.collection('events').orderBy('date');
+export function listenTogetEventsFromFirestore() {
+  return db.collection("events").orderBy("date");
 }
 
-export function listernToEventFromFirestore(eventId){
-    return db.collection('events').doc(eventId);
+export function listernToEventFromFirestore(eventId) {
+  return db.collection("events").doc(eventId);
 }
 
-export function addEventToFirestore(event){
-    return db.collection('events').add({
-        ...event,
-        hostedBy:'Diana',
-        hostPhotoURL: 'https://randomuser.me/api/portraits/women/20.jpg',
-        attendees: firebase.firestore.FieldValue.arrayUnion({
-            id: cuid(),
-            displayName: 'Diana',
-            photoURL:'https://randomuser.me/api/portraits/women/20.jpg'
-        })
-    })
+export function addEventToFirestore(event) {
+  return db.collection("events").add({
+    ...event,
+    hostedBy: "Diana",
+    hostPhotoURL: "https://randomuser.me/api/portraits/women/20.jpg",
+    attendees: firebase.firestore.FieldValue.arrayUnion({
+      id: cuid(),
+      displayName: "Diana",
+      photoURL: "https://randomuser.me/api/portraits/women/20.jpg",
+    }),
+  });
 }
 
-export function updateEventInFirestore(event){
-    return db.collection('events').doc(event.id).update(event);
+export function updateEventInFirestore(event) {
+  return db.collection("events").doc(event.id).update(event);
 }
 
-export function deleteEventInFirestore(eventId){
-    return db.collection('events').doc(eventId).delete();
+export function deleteEventInFirestore(eventId) {
+  return db.collection("events").doc(eventId).delete();
 }
 
-export function cancelEventToggle(event){
-    return db.collection('events').doc(event.id).update({
-        isCancelled: !event.isCancelled
+export function cancelEventToggle(event) {
+  return db.collection("events").doc(event.id).update({
+    isCancelled: !event.isCancelled,
+  });
+}
+
+export function setUserProfileData(user) {
+  return db
+    .collection("users")
+    .doc(user.uid)
+    .set({
+      displayName: user.displayName,
+      email: user.email,
+      photoURL: user.photoURL || null,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     });
-
 }
 
-export function setUserProfileData(user){
-    return db.collection('users').doc(user.uid).set({
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL || null,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-    })
+export async function socialLogin(selectedProvider) {
+  let provider;
+  if (selectedProvider === "facebook") {
+    provider = new firebase.auth.FacebookAuthProvider();
+  }
+  if (selectedProvider === "google") {
+    provider = new firebase.auth.GoogleAuthProvider();
+  }
+  try {
+    const result = await firebase.auth().signInWithPopup(provider);
+    console.log(result);
+    if (result.additionalUserInfo.isNewUser) {
+      await setUserProfileData(result.user);
+    }
+  } catch (error) {
+    toast.error(error.message);
+  }
 }
 
-export async function socialLogin(selectedProvider){
-    let provider;
-    if(selectedProvider === 'facebook'){
-        provider = new firebase.auth.FacebookAuthProvider();
+export function getUserProfile(userId) {
+  return db.collection("users").doc(userId);
+}
+
+export async function updateUserProfile(profile) {
+  const user = firebase.auth().currentUser;
+  try {
+    if (user.displayName !== profile.displayName) {
+      await user.updateProfile({
+        displayName: profile.displayName
+      });
     }
-    if(selectedProvider ==='google'){
-        provider = new firebase.auth.GoogleAuthProvider();
-    }
-    try{
-        const result = await firebase.auth().signInWithPopup(provider);
-        console.log(result);
-        if(result.additionalUserInfo.isNewUser){
-            await setUserProfileData(result.user);
-        }
-    }catch(error){
-        toast.error(error.message);
-    }
+    return await db.collection("users").doc(user.uid).update(profile);
+  } catch (error) {
+      throw error;
+  }
 }
