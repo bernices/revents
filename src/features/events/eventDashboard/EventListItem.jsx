@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button, Icon, Item, Label, List, Segment } from 'semantic-ui-react';
 import EventListAttendee from './EventListAttendee';
 import {format} from 'date-fns'
-import { cancelEventToggle } from '../../../app/firestore/firestoreService';
+import { deleteEventInFirestore } from '../../../app/firestore/firestoreService';
 export default function EventListItem({event}){
 
     return (
@@ -15,7 +15,7 @@ export default function EventListItem({event}){
                         <Item.Content>
                             <Item.Header content={event.title}/>
                             <Item.Description>
-                                Hosted by {event.hostedBy}
+                                Hosted by <Link to={`/profile/${event.hostUid}`}>{event.hostedBy}</Link>
                             </Item.Description>
                             {event.isCancelled && (
                                 <Label style={{top: '-40px'}}
@@ -43,7 +43,7 @@ export default function EventListItem({event}){
             </Segment>
             <Segment clearing>
                 <div>{event.description}</div>
-                <Button onClick={()=> cancelEventToggle(event)} 
+                <Button onClick={()=> deleteEventInFirestore(event.id)} 
                 color='red' 
                 floated='right' 
                 content='Delete'/>
