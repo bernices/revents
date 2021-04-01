@@ -1,6 +1,6 @@
 import { fetchSampleDate } from '../../../app/api/mockApi';
 import { asyncActionError, asyncActionFinish, asyncActionStart } from '../../../app/async/asyncReducer';
-import {CREATE_EVENT,DELETE_EVENT,FETCH_EVENTS,UPDATE_EVENT} from './eventConstants';
+import {CREATE_EVENT,DELETE_EVENT,FETCH_EVENTS,LISTEN_TO_EVENT_CAHT,UPDATE_EVENT} from './eventConstants';
 
 export function createEvent(event){
     return{
@@ -43,5 +43,12 @@ export function listenToEvents(events){
         type:FETCH_EVENTS,
         payload:events
 
+    }
+}
+
+export function listenToEventChat(comments){
+    return{
+        type:LISTEN_TO_EVENT_CAHT,
+        payload:comments
     }
 }

@@ -1,4 +1,3 @@
-import userEvent from "@testing-library/user-event";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router";
@@ -36,7 +35,7 @@ export default function EventDetailedPage({ match }) {
       <Grid.Column width={10}>
         <EventDetailedHeader event={event} isGoing={isGoing} isHost={isHost} />
         <EventDetailedInfo event={event} />
-        <EventDetailedChat />
+        <EventDetailedChat eventId={event.id} />
       </Grid.Column>
       <Grid.Column width={6}>
         <EventDetailedSideBar attendees={event.attendees} hostUid={event.hostUid} />
