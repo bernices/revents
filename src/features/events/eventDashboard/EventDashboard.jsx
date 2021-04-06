@@ -4,6 +4,7 @@ import EventList from "./EventList";
 import { useDispatch, useSelector } from "react-redux";
 import EventListItemPlaceholder from "./EventListItemPlaceHolder";
 import EventFilters from "./EventFilter";
+import EventsFeed from "./EventsFeed";
 import { listenTogetEventsFromFirestore } from "../../../app/firestore/firestoreService";
 import { listenToEvents } from "./eventActions";
 import useFirestoreCollection from "../../../app/hooks/useFirestoreCollection";
@@ -11,6 +12,7 @@ export default function EventDashboard() {
   const dispatch = useDispatch();
   const { events } = useSelector((state) => state.event);
   const { loading } = useSelector((state) => state.async);
+  const { authenticated } = useSelector((state) => state.auth);
   const [predicate, setPredicate] = useState(
     new Map([
       ["startDate", new Date()],
@@ -25,7 +27,7 @@ export default function EventDashboard() {
   useFirestoreCollection({
     query: () => listenTogetEventsFromFirestore(predicate),
     data: (events) => dispatch(listenToEvents(events)),
-    deps: [dispatch,predicate],
+    deps: [dispatch, predicate],
   });
 
   return (
@@ -40,7 +42,12 @@ export default function EventDashboard() {
         <EventList events={events} />
       </Grid.Column>
       <Grid.Column width={6}>
-        <EventFilters predicate={predicate} setPredicate={handleSetPredicate} loading={loading} />
+        {authenticated && <EventsFeed />}
+        <EventFilters
+          predicate={predicate}
+          setPredicate={handleSetPredicate}
+          loading={loading}
+        />
       </Grid.Column>
     </Grid>
   );
