@@ -5,7 +5,7 @@ import { Grid } from "semantic-ui-react";
 import { listernToEventFromFirestore } from "../../../../app/firestore/firestoreService";
 import useFirestoreDoc from "../../../../app/hooks/useFirestoreDoc";
 import LoadingComponent from "../../../../app/layout/LoadingComponent";
-import { listenToEvents } from "../eventActions";
+import { listenToSelectedEvents } from "../eventActions";
 import EventDetailedChat from "./EventDetailedChat";
 import EventDetailedHeader from "./EventDetailedHeader";
 import EventDetailedInfo from "./EventDetailedInfo";
@@ -14,16 +14,14 @@ import EventDetailedSideBar from "./EventDetailedSidebar";
 export default function EventDetailedPage({ match }) {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.auth);
-  const event = useSelector((state) =>
-    state.event.events.find((e) => e.id === match.params.id)
-  );
+  const event = useSelector((state) => state.event.selectedEvent);
   const { loading, error } = useSelector((state) => state.async);
   const isHost = event?.hostUid === currentUser?.uid;
   const isGoing = event?.attendees?.some((a) => a.id === currentUser?.uid);
 
   useFirestoreDoc({
     query: () => listernToEventFromFirestore(match.params.id),
-    data: (event) => dispatch(listenToEvents([event])),
+    data: (event) => dispatch(listenToSelectedEvents(event)),
     deps: [match.params.id],
   });
 
@@ -38,7 +36,10 @@ export default function EventDetailedPage({ match }) {
         <EventDetailedChat eventId={event.id} />
       </Grid.Column>
       <Grid.Column width={6}>
-        <EventDetailedSideBar attendees={event.attendees} hostUid={event.hostUid} />
+        <EventDetailedSideBar
+          attendees={event.attendees}
+          hostUid={event.hostUid}
+        />
       </Grid.Column>
     </Grid>
   );

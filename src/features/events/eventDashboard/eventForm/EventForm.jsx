@@ -6,7 +6,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import MyTextInput from "../../../../app/common/form/MyTextInput";
 import MyTextArea from "../../../../app/common/form/MyTextArea";
-import { listenToEvents } from "../../eventDashboard/eventActions";
+import { listenToSelectedEvents } from "../../eventDashboard/eventActions";
 import MySelectInput from "../../../../app/common/form/MySelectInput";
 import { categoryData } from "../../../../app/api/categoryOptions";
 import MyDateInput from "../../../../app/common/form/MyDateInput";
@@ -24,8 +24,8 @@ export default function EventForm({ match, history }) {
   const dispatch = useDispatch();
   const [loadingCancel, setloadingCancel] = useState(false);
   const [confrimOpen, setConfirmOpen] = useState(false);
-  const selectedEvent = useSelector((state) =>
-    state.event.events.find((e) => e.id === match.params.id)
+  const selectedEvent = useSelector(
+  (state) => state.event.selectedEvent
   );
 
   const { loading, error } = useSelector((state) => state.async);
@@ -63,7 +63,7 @@ export default function EventForm({ match, history }) {
   useFirestoreDoc({
     shouldExecute: !!match.params.id,
     query: () => listernToEventFromFirestore(match.params.id),
-    data: (selectedEvent) => dispatch(listenToEvents([selectedEvent])),
+    data: (selectedEvent) => dispatch(listenToSelectedEvents(selectedEvent)),
     deps: [match.params.id],
   });
 
